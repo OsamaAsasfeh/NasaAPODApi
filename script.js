@@ -111,7 +111,7 @@ function showContent(page) {
     top: 0,
     behavior: "instant",
   });
-  if (page === "ruslts") {
+  if (page === "results") {
     resultsNav.classList.remove("hidden");
     favoritesNav.classList.add("hidden");
   } else {

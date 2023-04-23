@@ -15,6 +15,7 @@ function createDOMNodes(page) {
   const currentArray =
     page === "results" ? reslutsArray : Object.values(favorites);
   console.log("Current Array", page);
+  console.log("Current Array:", currentArray);
   currentArray.forEach((result) => {
     //card container
     const card = document.createElement("div");
@@ -75,7 +76,6 @@ function updateDOM(page) {
   //Get Favorites from localStoreg
   if (localStorage.getItem("nasaFavorites")) {
     favorites = JSON.parse(localStorage.getItem("nasaFavorites"));
-    console.log("favorite for localStor", favorites);
   }
   imagesContainer.textContent = "";
   createDOMNodes(page);
@@ -87,7 +87,7 @@ function saveFavorite(itemUrl) {
   reslutsArray.forEach((item) => {
     if (item.url.includes(itemUrl) && !favorites[itemUrl]) {
       favorites[itemUrl] = item;
-      console.log(JSON.stringify(favorites));
+
       //show Save Convfirmation for 2s
       savedConfiremd.hidden = false;
       setTimeout(() => {
@@ -126,11 +126,21 @@ async function getNasaPictures() {
   loader.classList.remove("hidden");
   try {
     const response = await fetch(apiUrl);
-    reslutsArray = await response.json();
+    console.log("res=", response.status);
+    if (response.status === 429) {
+      alert(
+        `You have exceeded the request limit. 
+         You can use your favorites, if they exist
+
+        Hourly Limit: 30 requests per IP address per hour 
+        Daily Limit: 50 requests per IP address per day`
+      );
+      reslutsArray = Object.values(favorites);
+    } else reslutsArray = await response.json();
+
     updateDOM("results");
-    console.log(reslutsArray);
   } catch (error) {
-    alert(error);
+    console.log(error);
   }
 }
 getNasaPictures();
